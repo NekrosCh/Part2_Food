@@ -151,12 +151,13 @@ window.addEventListener('DOMContentLoaded', () => {
     // const menuOldCard = document.querySelectorAll('.menu__item');
     // menuOldCard.forEach(item => item.remove());
     class MenuCard {
-        constructor(src, title, altImg, descr, price, parentSelector) {
+        constructor(src, title, altImg, descr, price, parentSelector, ...classes) {
             this.src = src;
             this.title = title;
             this.altImg = altImg;
             this.descr = descr;
             this.price = price;
+            this.classes = classes;
             this.parent = document.querySelector(parentSelector);
             this.transfer = 27;
             this.changeToUAH();
@@ -168,7 +169,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
         render () {
             let element = document.createElement('div');
-            element.innerHTML = `<div class="menu__item">
+            if (this.classes.length == 0) {
+                this.element = 'menu__item';
+                element.classList.add(this.element);
+            } else {
+                this.classes.forEach(className => element.classList.add(className));
+            }
+            element.innerHTML = `
                 <img src=${this.src} alt=${this.altImg}>
                 <h3 class="menu__item-subtitle">${this.title}</h3>
                 <div class="menu__item-descr">${this.descr}</div>
@@ -176,8 +183,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 <div class="menu__item-price">
                 <div class="menu__item-cost">Цена:</div>
                 <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
-            </div>
-            </div>`;
+                </div>
+            `;
             this.parent.append(element);
         }
     }
@@ -188,25 +195,28 @@ window.addEventListener('DOMContentLoaded', () => {
         "vegy", 
         'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
         9, 
-        '.menu__field .container'),
+        '.menu__field .container',
+        'menu__item',
+        'big'),
     menuCardElite = new MenuCard(
         "img/tabs/elite.jpg", 
         'Меню “Премиум”', 
         "elite", 
         'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!', 
         20, 
-        '.menu__field .container'),
+        '.menu__field .container',
+        'menu__item'),
     menuCardPost = new MenuCard(
         "img/tabs/post.jpg", 
         'Меню "Постное"', 
         "post", 
         'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', 
         15, 
-        '.menu__field .container');
+        '.menu__field .container',
+        'menu__item');
     
     menuCardVegy.render();
     menuCardElite.render();
     menuCardPost.render();
-
 
 });
