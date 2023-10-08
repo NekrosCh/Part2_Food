@@ -189,37 +189,84 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const menuCardVegy = new MenuCard(
-        "img/tabs/vegy.jpg", 
-        'Меню "Фитнес"', 
-        "vegy", 
-        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
-        9, 
-        '.menu__field .container',
-        'menu__item',
-        'big'),
-    menuCardElite = new MenuCard(
-        "img/tabs/elite.jpg", 
-        'Меню “Премиум”', 
-        "elite", 
-        'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!', 
-        20, 
-        '.menu__field .container',
-        'menu__item'),
-    menuCardPost = new MenuCard(
-        "img/tabs/post.jpg", 
-        'Меню "Постное"', 
-        "post", 
-        'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', 
-        15, 
-        '.menu__field .container',
-        'menu__item');
+    const getResource = async (url) => {
+        const res = await fetch(url);
+
+        if (!res.ok) {
+           throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+        }
+
+        return await res.json();
+    };
+
+    // getResource('http://localhost:3000/menu')
+    //     .then(data => {
+    //         data.forEach(({img, title, altimg, descr, price}) => {
+    //             new MenuCard(img, title, altimg, descr, price, '.menu__field .container').render();
+    //         });
+    //     });
+    // getResource('http://localhost:3000/menu')
+    //     .then(data => createCard(data));
+
+    // function createCard(data) {
+    //     data.forEach(({img, title, altimg, descr, price}) => {
+    //         const element = document.createElement('div');
+
+    //         element.classList.add('menu__item');
+    //         element.innerHTML = `
+    //             <img src=${img} alt=${altimg}>
+    //             <h3 class="menu__item-subtitle">${title}</h3>
+    //             <div class="menu__item-descr">${descr}</div>
+    //             <div class="menu__item-divider"></div>
+    //             <div class="menu__item-price">
+    //             <div class="menu__item-cost">Цена:</div>
+    //             <div class="menu__item-total"><span>${price}</span> грн/день</div>
+    //             </div>
+    //         `;
+
+    //         document.querySelector('.menu .container'). append(element);
+    //     });
+    // }
+
+
+    // const menuCardVegy = new MenuCard(
+    //     "img/tabs/vegy.jpg", 
+    //     'Меню "Фитнес"', 
+    //     "vegy", 
+    //     'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
+    //     9, 
+    //     '.menu__field .container',
+    //     'menu__item',
+    //     'big'),
+    // menuCardElite = new MenuCard(
+    //     "img/tabs/elite.jpg", 
+    //     'Меню “Премиум”', 
+    //     "elite", 
+    //     'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!', 
+    //     20, 
+    //     '.menu__field .container',
+    //     'menu__item'),
+    // menuCardPost = new MenuCard(
+    //     "img/tabs/post.jpg", 
+    //     'Меню "Постное"', 
+    //     "post", 
+    //     'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', 
+    //     15, 
+    //     '.menu__field .container',
+    //     'menu__item');
     
-    menuCardVegy.render();
-    menuCardElite.render();
-    menuCardPost.render();
+    // menuCardVegy.render();
+    // menuCardElite.render();
+    // menuCardPost.render();
 
     //  Forms
+    axios.get('http://localhost:3000/menu')
+        .then(data => {
+            data.data.forEach(({img, title, altimg, descr, price}) => {
+                new MenuCard(img, title, altimg, descr, price, '.menu__field .container').render();
+            });
+        });
+   
     const forms = document.querySelectorAll('form');
 
     const message = {
@@ -229,10 +276,22 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     forms.forEach(item => {
-        postData(item);
+        bindPostData(item);
     });
 
-    function postData(form) {
+    const postData = async (url, data) => {
+        const res = await fetch(url, {
+            method: "POST",
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: data
+        });
+
+        return await res.json();
+    };
+
+    function bindPostData(form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -255,24 +314,13 @@ window.addEventListener('DOMContentLoaded', () => {
             
             const formData = new FormData(form);
 
-            const object = {};
-
-            formData.forEach(function(value, key) {
-                object[key] = value;
-            });
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
             // const json = JSON.stringify(object);
 
             // request.send(json);
 
-            fetch('server1.php', {
-                method: "POST",
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify(object)
-            })
-            .then(data => data.text())
+            postData('http://localhost:3000/requests', json)
             .then(data => {
                     console.log(data);
                     showThanksModal(message.success);
@@ -319,6 +367,10 @@ window.addEventListener('DOMContentLoaded', () => {
             closeModal();
         }, 4000)
     }
+
+    fetch('http://localhost:3000/menu')
+        .then(data => data.json())
+        .then(res => console.log(res));
     // Fetch API
     // fetch('https://jsonplaceholder.typicode.com/posts', {
     //     method: "POST",
