@@ -381,4 +381,81 @@ window.addEventListener('DOMContentLoaded', () => {
     // })
     //     .then(response => response.json())
     //     .then(json => console.log(json));
+
+    // Slider
+    let counterSlider = 0;
+    const offerSlide = document.querySelectorAll('.offer__slide'),
+          offerSliderCur = document.querySelector('#current'),
+          offerSliderTotal = document.querySelector('#total'),
+          sliderBtnPrev = document.querySelector('.offer__slider-prev'),
+          sliderBtnNext = document.querySelector('.offer__slider-next');
+
+    function showOfferSlide(i) {
+        if (i > offerSlide.length - 1) {
+            counterSlider = 0;
+        };
+        if (i < 0) {
+            counterSlider = offerSlide.length - 1;
+        }
+        offerSlide.forEach((item) => {
+            item.classList.add('hide');
+            item.classList.remove('show', 'fade');
+        });
+        offerSlide[counterSlider].classList.add('show', 'fade');
+        offerSlide[counterSlider].classList.remove('hide');
+
+        offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider + 1) : (counterSlider + 1)}</span>`;
+    };
+
+    offerSliderTotal.innerHTML = `<span id="total">${offerSlide.length < 10 ? "0" + offerSlide.length : offerSlide.length}</span>`;
+    showOfferSlide(counterSlider);
+
+    function switchSlider (n) {
+        showOfferSlide(counterSlider += n);
+    };
+
+    sliderBtnNext.addEventListener('click', function() {
+        switchSlider (1);
+    });
+
+    sliderBtnPrev.addEventListener('click', function() {
+        switchSlider (-1);
+    });
+
+
+// Мой вариант (хотя верхушку я уже переделал)
+    // function switchSlider () {
+    //     offerSliderWrap.addEventListener('click', (event) => {
+    //         if(event.target === sliderBtnNext) {
+    //             if(counterSlider < offerSlide.length - 1) {
+    //                 counterSlider++;
+
+    //                 showOfferSlide(counterSlider);
+    //                 offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider + 1) : (counterSlider + 1)}</span>`;
+    //             } else {
+    //                 counterSlider = 0;
+    //                 showOfferSlide(counterSlider);
+    //                 offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider + 1) : (counterSlider + 1)}</span>`;
+    //             }
+
+    //         };
+    //         if(event.target === sliderBtnPrev) {
+    //             if(counterSlider > 0) {
+    //                 counterSlider--;
+
+    //                 showOfferSlide(counterSlider);
+    //                 offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider + 1) : (counterSlider + 1)}</span>`;
+    //             } else {
+    //                 counterSlider = offerSlide.length - 1;
+
+    //                 showOfferSlide(counterSlider);
+    //                 offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider + 1) : (counterSlider + 1)}</span>`;
+    //             }
+    //         };
+    //     });
+    // };
+    // switchSlider();
+
+
+
 });
