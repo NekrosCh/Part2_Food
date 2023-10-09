@@ -383,44 +383,90 @@ window.addEventListener('DOMContentLoaded', () => {
     //     .then(json => console.log(json));
 
     // Slider
-    let counterSlider = 0;
+    let counterSlider = 1;
     const offerSlide = document.querySelectorAll('.offer__slide'),
           offerSliderCur = document.querySelector('#current'),
           offerSliderTotal = document.querySelector('#total'),
           sliderBtnPrev = document.querySelector('.offer__slider-prev'),
-          sliderBtnNext = document.querySelector('.offer__slider-next');
-
-    function showOfferSlide(i) {
-        if (i > offerSlide.length - 1) {
-            counterSlider = 0;
-        };
-        if (i < 0) {
-            counterSlider = offerSlide.length - 1;
-        }
-        offerSlide.forEach((item) => {
-            item.classList.add('hide');
-            item.classList.remove('show', 'fade');
-        });
-        offerSlide[counterSlider].classList.add('show', 'fade');
-        offerSlide[counterSlider].classList.remove('hide');
-
-        offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider + 1) : (counterSlider + 1)}</span>`;
-    };
+          sliderBtnNext = document.querySelector('.offer__slider-next'),
+          slidesWrapper = document.querySelector('.offer__slider-wrapper'),
+          slidesField = document.querySelector('.offer__slider-inner'),
+          width = window.getComputedStyle(slidesWrapper).width;
+    let offset = 0;
 
     offerSliderTotal.innerHTML = `<span id="total">${offerSlide.length < 10 ? "0" + offerSlide.length : offerSlide.length}</span>`;
-    showOfferSlide(counterSlider);
+    offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider) : (counterSlider)}</span>`;
 
-    function switchSlider (n) {
-        showOfferSlide(counterSlider += n);
-    };
+    slidesField.style.width = 100 * offerSlide.length + '%';
+    slidesField.style.display = 'flex';
+    slidesField.style.transition = '0.5s all';
+    slidesWrapper.style.overflow = 'hidden';
+    offerSlide.forEach(slide => {
+        slide.style.width = width;
+    });
+    
+    sliderBtnNext.addEventListener('click', () => {
+        if (offset == +width.slice(0, width.length - 2) * (offerSlide.length - 1)) {
+            offset = 0;
+        } else {
+            offset += +width.slice(0, width.length - 2);
+        }
+        slidesField.style.transform =`translateX(-${offset}px)`;
+        if (counterSlider == offerSlide.length) {
+            counterSlider = 1;
+        } else {
+            counterSlider++;
+        }
+        offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider) : (counterSlider)}</span>`; 
+    });
+    sliderBtnPrev.addEventListener('click', () => {
+        if (offset == 0) { 
+            offset = +width.slice(0, width.length - 2) * (offerSlide.length - 1);
+        } else {
+            offset -= +width.slice(0, width.length - 2);
+        }
+        slidesField.style.transform =`translateX(-${offset}px)`;
+        if (counterSlider == 1) {
+            counterSlider = offerSlide.length;
+        } else {
+            counterSlider--;
+        }
+        offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider) : (counterSlider)}</span>`; 
 
-    sliderBtnNext.addEventListener('click', function() {
-        switchSlider (1);
     });
 
-    sliderBtnPrev.addEventListener('click', function() {
-        switchSlider (-1);
-    });
+        //   let counterSlider = 0;
+    // function showOfferSlide(i) {
+    //     if (i > offerSlide.length - 1) {
+    //         counterSlider = 0;
+    //     };
+    //     if (i < 0) {
+    //         counterSlider = offerSlide.length - 1;
+    //     }
+    //     offerSlide.forEach((item) => {
+    //         item.classList.add('hide');
+    //         item.classList.remove('show', 'fade');
+    //     });
+    //     offerSlide[counterSlider].classList.add('show', 'fade');
+    //     offerSlide[counterSlider].classList.remove('hide');
+
+    //     offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider + 1) : (counterSlider + 1)}</span>`;
+    // };
+
+    // offerSliderTotal.innerHTML = `<span id="total">${offerSlide.length < 10 ? "0" + offerSlide.length : offerSlide.length}</span>`;
+    // showOfferSlide(counterSlider);
+
+    // function switchSlider (n) {
+    //     showOfferSlide(counterSlider += n);
+    // };
+
+    // sliderBtnNext.addEventListener('click', function() {
+    //     switchSlider (1);
+    // });
+
+    // sliderBtnPrev.addEventListener('click', function() {
+    //     switchSlider (-1);
+    // });
 
 
 // Мой вариант (хотя верхушку я уже переделал)
