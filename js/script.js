@@ -385,6 +385,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Slider
     let counterSlider = 1;
     const offerSlide = document.querySelectorAll('.offer__slide'),
+          slider = document.querySelector('.offer__slider'),
           offerSliderCur = document.querySelector('#current'),
           offerSliderTotal = document.querySelector('#total'),
           sliderBtnPrev = document.querySelector('.offer__slider-prev'),
@@ -404,12 +405,32 @@ window.addEventListener('DOMContentLoaded', () => {
     offerSlide.forEach(slide => {
         slide.style.width = width;
     });
+    slider.style.position = 'relative';
+
+    function transNumber (str) {
+        return +str.replace(/\D/g, '');
+    }
+
+    const indicators = document.createElement('ol'),
+          dots = [];
+    indicators.classList.add('carousel-indicators');
+    slider.append(indicators);
+    for (let i = 0; i < offerSlide.length; i++) {
+        const dot = document.createElement('li');
+        dot.setAttribute('data-slide-to', i + 1);
+        dot.classList.add('dot');
+        if (i == 0) {
+            dot.style.opacity = 1;
+        }
+        indicators.append(dot);
+        dots.push(dot);
+    };
     
     sliderBtnNext.addEventListener('click', () => {
-        if (offset == +width.slice(0, width.length - 2) * (offerSlide.length - 1)) {
+        if (offset == transNumber(width) * (offerSlide.length - 1)) {
             offset = 0;
         } else {
-            offset += +width.slice(0, width.length - 2);
+            offset += transNumber(width);
         }
         slidesField.style.transform =`translateX(-${offset}px)`;
         if (counterSlider == offerSlide.length) {
@@ -418,12 +439,15 @@ window.addEventListener('DOMContentLoaded', () => {
             counterSlider++;
         }
         offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider) : (counterSlider)}</span>`; 
+
+        dots.forEach(dot => dot.style.opacity = '0.5');
+        dots[counterSlider - 1].style.opacity = '1';
     });
     sliderBtnPrev.addEventListener('click', () => {
         if (offset == 0) { 
-            offset = +width.slice(0, width.length - 2) * (offerSlide.length - 1);
+            offset = transNumber(width) * (offerSlide.length - 1);
         } else {
-            offset -= +width.slice(0, width.length - 2);
+            offset -= transNumber(width);
         }
         slidesField.style.transform =`translateX(-${offset}px)`;
         if (counterSlider == 1) {
@@ -433,75 +457,91 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider) : (counterSlider)}</span>`; 
 
+        dots.forEach(dot => dot.style.opacity = '0.5' );
+        dots[counterSlider - 1].style.opacity = '1';
     });
 
-        //   let counterSlider = 0;
-    // function showOfferSlide(i) {
-    //     if (i > offerSlide.length - 1) {
-    //         counterSlider = 0;
-    //     };
-    //     if (i < 0) {
-    //         counterSlider = offerSlide.length - 1;
-    //     }
-    //     offerSlide.forEach((item) => {
-    //         item.classList.add('hide');
-    //         item.classList.remove('show', 'fade');
-    //     });
-    //     offerSlide[counterSlider].classList.add('show', 'fade');
-    //     offerSlide[counterSlider].classList.remove('hide');
+    dots.forEach(dot => {
+        dot.addEventListener('click', (e) => {
+            const slideTo = e.target.getAttribute('data-slide-to');
 
-    //     offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider + 1) : (counterSlider + 1)}</span>`;
-    // };
+            counterSlider = slideTo;
+            offset = transNumber(width) * (slideTo - 1);
 
-    // offerSliderTotal.innerHTML = `<span id="total">${offerSlide.length < 10 ? "0" + offerSlide.length : offerSlide.length}</span>`;
-    // showOfferSlide(counterSlider);
+            slidesField.style.transform =`translateX(-${offset}px)`;
 
-    // function switchSlider (n) {
-    //     showOfferSlide(counterSlider += n);
-    // };
+            offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider) : (counterSlider)}</span>`; 
 
-    // sliderBtnNext.addEventListener('click', function() {
-    //     switchSlider (1);
-    // });
+            dots.forEach(dot => dot.style.opacity = '0.5');
+            dots[counterSlider - 1].style.opacity = '1';
+        });
+    })
 
-    // sliderBtnPrev.addEventListener('click', function() {
-    //     switchSlider (-1);
-    // });
+    // Калькулятор
 
+    const result = document.querySelector('.calculating__result span');
+    let sex = 'female', 
+        height, weight, age, 
+        ratio = 1.375;
+    
+    function calcTotal() {
+        if (!sex|| !height || !weight || !age || !ratio) {
+            result.textContent = '____';
+            return;
+        }
 
-// Мой вариант (хотя верхушку я уже переделал)
-    // function switchSlider () {
-    //     offerSliderWrap.addEventListener('click', (event) => {
-    //         if(event.target === sliderBtnNext) {
-    //             if(counterSlider < offerSlide.length - 1) {
-    //                 counterSlider++;
+        if(sex === 'female') {
+            result.textContent = Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * ratio);
+        } else { 
+            result.textContent = Math.round((88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * ratio);
+        }
+    }
 
-    //                 showOfferSlide(counterSlider);
-    //                 offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider + 1) : (counterSlider + 1)}</span>`;
-    //             } else {
-    //                 counterSlider = 0;
-    //                 showOfferSlide(counterSlider);
-    //                 offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider + 1) : (counterSlider + 1)}</span>`;
-    //             }
+    calcTotal();
 
-    //         };
-    //         if(event.target === sliderBtnPrev) {
-    //             if(counterSlider > 0) {
-    //                 counterSlider--;
+    function getStaticInformation(parentSelector, activeClass) {
+        const elements = document.querySelectorAll(`${parentSelector} div`);
+        
+        elements.forEach(elem => {
+            elem.addEventListener('click', (e) => {
+                if (e.target.getAttribute('data-ratio')) {
+                    ratio = +e.target.getAttribute('data-ratio');
+                } else {
+                    sex = e.target.getAttribute('id');
+                }
+    
+                elements.forEach(elem => {
+                    elem.classList.remove(activeClass);
+                });
+                e.target.classList.add(activeClass);
+                calcTotal();
+            });
+        });     
+    }
 
-    //                 showOfferSlide(counterSlider);
-    //                 offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider + 1) : (counterSlider + 1)}</span>`;
-    //             } else {
-    //                 counterSlider = offerSlide.length - 1;
+    getStaticInformation('#gender', 'calculating__choose-item_active');
+    getStaticInformation('.calculating__choose_big', 'calculating__choose-item_active');
 
-    //                 showOfferSlide(counterSlider);
-    //                 offerSliderCur.innerHTML = `<span id="current">${counterSlider < 10 ? "0" + (counterSlider + 1) : (counterSlider + 1)}</span>`;
-    //             }
-    //         };
-    //     });
-    // };
-    // switchSlider();
+    function getDynamicInformation(selector) {
+        const input = document.querySelector(selector);
 
-
+        input.addEventListener('input', () => {
+            switch(input.getAttribute('id')) {
+                case 'height':
+                    height = +input.value;
+                    break;
+                case 'weight':
+                    weight = +input.value;
+                    break;
+                case 'age':
+                    age = +input.value;
+                    break;    
+            }
+            calcTotal();
+        });
+    }
+    getDynamicInformation('#height');
+    getDynamicInformation('#weight');
+    getDynamicInformation('#age');
 
 });
